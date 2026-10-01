@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Ilmiah: Eksperimen Kalor (Q = m × c × ΔT)</title>
+    <style>
+        :root {
+            --bg-main: #f0fdf4;
+            --bg-card: #ffffff;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --primary-light: #e0f2fe;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --accent-yellow: #f59e0b;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #f4f9f5;
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 20px 12px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+            color: white;
+            padding: 30px 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 20px rgba(2, 132, 199, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 800;
+        }
+
+        header p.subtitle {
+            font-size: 1.2rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
+        header p.desc {
+            font-size: 1rem;
+            opacity: 0.95;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 900px) {
+            .grid-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 2px solid #e2e8f0;
+            position: relative;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px dashed #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+            color: #334155;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        input[type="number"], select, input[type="text"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+            background-color: #f8fafc;
+        }
+
+        input[type="number"]:focus, select:focus, input[type="text"]:focus {
+            border-color: var(--primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--primary);
+            height: 8px;
+            cursor: pointer;
+        }
+
+        .unit-badge {
+            background: #e2e8f0;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            color: #475569;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .lab-viewport {
+            background: linear-gradient(to bottom, #f0f9ff, #e0f2fe);
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            height: 320px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 20px;
+            overflow: hidden;
+        }
+
+        canvas#labCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s transform, all 0.2s background-color;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-orange);
+            color: white;
+            flex: 2;
+        }
+
+        .btn-primary:hover {
+            background-color: #ea580c;
+        }
+
+        .btn-secondary {
+            background-color: #64748b;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        .btn-danger {
+            background-color: var(--accent-red);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-action {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border: 2px solid #93c5fd;
+            padding: 8px 14px;
+            font-size: 0.9rem;
+        }
+
+        .btn-action:hover {
+            background-color: #bae6fd;
+        }
+
+        .calc-box {
+            background-color: #f8fafc;
+            border-left: 5px solid var(--primary);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .calc-step {
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .calc-result {
+            background-gradient: linear-gradient(135deg, #fff7ed, #ffedd5);
+            background-color: #fff7ed;
+            border: 2px solid #fdba74;
+            color: #c2410c;
+            font-size: 1.4rem;
+            font-weight: 800;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 16px;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
+        }
+
+        .challenge-box {
+            background: #faf5ff;
+            border: 2px solid #e9d5ff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .feedback-banner {
+            background-color: #e0f2fe;
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #0369a1;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .graph-container {
+            width: 100%;
+            height: 240px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            position: relative;
+            padding: 10px;
+        }
+
+        .mission-card {
+            background: #fffbeb;
+            border: 2px solid #fde68a;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 16px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .option-btn {
+            text-align: left;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            background: #ffffff;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .option-btn.selected-correct {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #15803d;
+        }
+
+        .option-btn.selected-wrong {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #ffffff, #f1f5f9);
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+        }
+
+        .summary-card h3 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .quiz-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .quiz-item p.q-text {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .score-box {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-blue { background: #dbeafe; color: #1e40af; }
+        .badge-orange { background: #ffedd5; color: #9a3412; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🔬 LAB ILMIAH INTERAKTIF</h1>
+        <div class="subtitle">Eksperimen Kalor: Q = m × c × ΔT</div>
+        <p class="desc">Atur kondisi eksperimen, amati perubahan suhu, lalu hitung kalor yang diperlukan!</p>
+    </header>
+
+    <div class="grid-2">
+        <!-- Control Panel -->
+        <div class="card">
+            <div class="card-title">🧪 Rancang Eksperimenmu</div>
+            
+            <div class="form-group">
+                <label for="materialSelect">Pilih Bahan Benda:</label>
+                <select id="materialSelect">
+                    <option value="4200" data-name="Air">Air — 4.200 J/kg°C</option>
+                    <option value="900" data-name="Aluminium">Aluminium — 900 J/kg°C</option>
+                    <option value="450" data-name="Besi">Besi — 450 J/kg°C</option>
+                    <option value="385" data-name="Tembaga">Tembaga — 385 J/kg°C</option>
+                    <option value="840" data-name="Kaca">Kaca — 840 J/kg°C</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="massInput">Massa Benda (m): <span id="massValDisplay">1.0</span> kg</label>
+                <div class="input-row">
+                    <input type="range" id="massRange" min="0.1" max="5" step="0.1" value="1.0">
+                    <input type="number" id="massInput" min="0.1" max="5" step="0.1" value="1.0" style="width: 90px;">
+                    <span class="unit-badge">kg</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="t1Input">Suhu Awal (T₁):</label>
+                <div class="input-row">
+                    <input type="number" id="t1Input" value="25" min="0" max="100">
+                    <span class="unit-badge">°C</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="t2Input">Suhu Akhir Target (T₂):</label>
+                <div class="input-row">
+                    <input type="number" id="t2Input" value="75" min="1" max="150">
+                    <span class="unit-badge">°C</span>
+                </div>
+            </div>
+
+            <div class="controls-row">
+                <button class="btn btn-primary" id="btnStart">🔥 Mulai Eksperimen</button>
+                <button class="btn btn-secondary" id="btnPause" disabled>⏸️ Pause</button>
+                <button class="btn btn-danger" id="btnReset">🔄 Reset</button>
+            </div>
+        </div>
+
+        <!-- Simulation Screen -->
+        <div class="card">
+            <div class="card-title">
+                👀 Visualisasi Laboratorium
+                <span class="badge badge-orange" id="statusBadge" style="margin-left: auto;">Siap</span>
+            </div>
+            <div class="lab-viewport">
+                <canvas id="labCanvas"></canvas>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 10px; font-weight: 700; color: #475569;">
+                <div>Suhu Terukur: <span id="currentTempDisplay" style="color: var(--accent-red); font-size: 1.2rem;">25.0</span> °C</div>
+                <div>Status Pemanas: <span id="heaterStatusDisplay" style="color: #64748b;">Mati</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">📊 HASIL EKSPERIMEN & PERHITUNGAN</div>
+        <p style="color: var(--text-muted); margin-bottom: 12px;">Penghitungan energi kalor yang diserap oleh benda selama proses pemanasan:</p>
+        
+        <div class="calc-box">
+            <div class="calc-step"><strong>1. Diketahui dari Alat:</strong></div>
+            <div class="calc-step">• Massa (m) = <span id="calcM">1.0</span> kg</div>
+            <div class="calc-step">• Kalor Jenis (c) = <span id="calcC">4200</span> J/kg°C (<span id="calcMatName">Air</span>)</div>
+            <div class="calc-step">• Suhu Awal (T₁) = <span id="calcT1">25</span> °C</div>
+            <div class="calc-step">• Suhu Akhir (T₂) = <span id="calcT2">75</span> °C</div>
+            <br>
+            <div class="calc-step"><strong>2. Hitung Perubahan Suhu (ΔT):</strong></div>
+            <div class="calc-step">ΔT = T₂ − T₁</div>
+            <div class="calc-step">ΔT = <span id="calcT2Sub">75</span> °C − <span id="calcT1Sub">25</span> °C = <strong id="calcDeltaT" style="color: var(--primary);">50</strong> °C</div>
+            <br>
+            <div class="calc-step"><strong>3. Hitung Kalor (Q):</strong></div>
+            <div class="calc-step">Q = m × c × ΔT</div>
+            <div class="calc-step">Q = <span id="calcMSub">1.0</span> × <span id="calcCSub">4200</span> × <span id="calcDeltaTSub">50</span></div>
+        </div>
+
+        <div class="calc-result" id="finalResultBox">
+            🔥 Kalor yang diperlukan (Q) = <span id="calcQFinal">210.000</span> Joule
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">🎯 Tantangan Eksperimen: Coba Sendiri!</div>
+        <p style="margin-bottom: 14px;">Uji bagaimana variabel mempengaruhi jumlah energi kalor (Q) secara instan:</p>
+
+        <div class="grid-2">
+            <div class="challenge-box">
+                <strong style="color: #6b21a8; font-size: 1.05rem;">Tantangan 1: Ubah Massa Benda</strong>
+                <p style="font-size: 0.9rem; color: #475569; margin: 6px 0 10px 0;">Bagaimana pengaruh massa terhadap besarnya kalor?</p>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-action" id="btnMassSmall">📉 Massa Lebih Kecil (0.5 kg)</button>
+                    <button class="btn btn-action" id="btnMassLarge">📈 Massa Lebih Besar (3.0 kg)</button>
+                </div>
+            </div>
+
+            <div class="challenge-box">
+                <strong style="color: #6b21a8; font-size: 1.05rem;">Tantangan 2: Ubah Perubahan Suhu (ΔT)</strong>
+                <p style="font-size: 0.9rem; color: #475569; margin: 6px 0 10px 0;">Bagaimana pengaruh kenaikan suhu terhadap kalor?</p>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-action" id="btnDtSmall">📉 ΔT Kecil (T₂ = 35°C)</button>
+                    <button class="btn btn-action" id="btnDtLarge">📈 ΔT Besar (T₂ = 95°C)</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="feedback-banner" id="challengeFeedback">
+            💡 <span>Petunjuk: Tekan salah satu tombol di atas untuk melihat perubahan jumlah kalor secara langsung!</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">📈 Grafik Interaktif: Hubungan Massa dengan Kalor (Q)</div>
+        <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 12px;">
+            Grafik di bawah menggambarkan secara visual bagaimana nilai Kalor (Q) berubah saat Massa (m) bertambah (dengan c dan ΔT konstan):
+        </p>
+        
+        <div class="graph-container">
+            <canvas id="graphCanvas"></canvas>
+        </div>
+
+        <div style="margin-top: 18px; background: #f8fafc; padding: 16px; border-radius: 10px; border: 1px solid #e2e8f0;">
+            <strong style="display: block; margin-bottom: 8px; color: #1e293b;">❓ Pertanyaan Analisis Grafik:</strong>
+            <p style="margin-bottom: 10px;">Apa pola hubungan antara massa benda (m) dan kalor (Q) yang dibutuhkan?</p>
+            
+            <div class="option-group" id="graphQuizGroup">
+                <button class="option-btn" data-correct="true">A. Q semakin besar ketika massa (m) semakin besar (Sebanding)</button>
+                <button class="option-btn" data-correct="false">B. Q semakin kecil ketika massa (m) semakin besar (Berbanding terbalik)</button>
+                <button class="option-btn" data-correct="false">C. Q tidak berubah meskipun massa bertambah</button>
+                <button class="option-btn" data-correct="false">D. Tidak dapat ditentukan dari grafik</button>
+            </div>
+            <div id="graphFeedback" style="margin-top: 10px; font-weight: 700;"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">🏆 MISI ILMUWAN MUDA</div>
+
+        <!-- Mission 1 -->
+        <div class="mission-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <strong style="color: #b45309; font-size: 1.1rem;">Misi 1: Pembuatan Teh Hangat</strong>
+                <span class="badge badge-blue">Tugas Hitung</span>
+            </div>
+            <p>Panaskan <strong>1 kg air</strong> (c = 4.200 J/kg°C) dari suhu room <strong>25°C</strong> menjadi <strong>35°C</strong>.</p>
+            <p style="margin-top: 6px; font-weight: 600;">Berapa energi kalor (Q) yang diperlukan?</p>
+            
+            <div class="input-row" style="margin-top: 10px; max-width: 400px;">
+                <input type="number" id="mission1Input" placeholder="Masukkan angka (contoh: 42000)">
+                <span class="unit-badge">Joule</span>
+                <button class="btn btn-primary" id="btnCheckMission1" style="padding: 10px 16px;">Cek</button>
+            </div>
+            <div id="mission1Feedback" style="margin-top: 8px; font-weight: 700;"></div>
+        </div>
+
+        <!-- Mission 2 -->
+        <div class="mission-card" style="background: #f0fdf4; border-color: #bbf7d0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <strong style="color: #15803d; font-size: 1.1rem;">Misi 2: Komparasi Pemanasan Air</strong>
+                <span class="badge badge-blue">Analisis Perbandingan</span>
+            </div>
+            <p>Bandingkan dua wadah berikut:</p>
+            <ul style="margin-left: 20px; margin-top: 4px; margin-bottom: 8px; font-size: 0.95rem;">
+                <li><strong>Eksperimen A:</strong> m = 1 kg, c = 4.200 J/kg°C, ΔT = 10°C</li>
+                <li><strong>Eksperimen B:</strong> m = 2 kg, c = 4.200 J/kg°C, ΔT = 10°C</li>
+            </ul>
+            <p style="font-weight: 600; margin-bottom: 8px;">Eksperimen mana yang membutuhkan energi kalor lebih besar?</p>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;" id="mission2Group">
+                <button class="option-btn" data-m2="A">Eksperimen A</button>
+                <button class="option-btn" data-m2="B">Eksperimen B</button>
+                <button class="option-btn" data-m2="SAMA">Keduanya Sama Besar</button>
+            </div>
+            <div id="mission2Feedback" style="margin-top: 10px; font-weight: 700;"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">💡 TEMUKAN POLANYA</div>
+        <p>Dari seluruh rangkaian percobaan, kita dapat menyimpulkan tiga pola utama:</p>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <h3>MASSA (m) ↑</h3>
+                <p><strong>Q semakin BESAR ↑</strong></p>
+                <span style="font-size: 0.85rem; color: #64748b;">Makin berat benda, makin banyak kalor dibutuhkan.</span>
+            </div>
+            <div class="summary-card">
+                <h3>KALOR JENIS (c) ↑</h3>
+                <p><strong>Q semakin BESAR ↑</strong></p>
+                <span style="font-size: 0.85rem; color: #64748b;">Sifat bahan mempengaruhi kemampuan menyerap panas.</span>
+            </div>
+            <div class="summary-card">
+                <h3>PERUBAHAN SUHU (ΔT) ↑</h3>
+                <p><strong>Q semakin BESAR ↑</strong></p>
+                <span style="font-size: 0.85rem; color: #64748b;">Makin tinggi target suhu, makin banyak energi diperlukan.</span>
+            </div>
+        </div>
+
+        <div style="background: #0284c7; color: white; padding: 16px; border-radius: 12px; margin-top: 18px; text-align: center; font-size: 1.1rem; font-weight: 700;">
+            📢 KESIMPULAN UTAMA: "Besarnya kalor (Q) yang diperlukan bergantung sebanding pada massa benda (m), kalor jenis benda (c), dan perubahan suhu (ΔT)."
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">📝 CEK PEMAHAMAN (KUIS SINKRON)</div>
+        <p style="margin-bottom: 16px; color: var(--text-muted);">Jawab 5 pertanyaan berikut untuk menguji pemahamanmu mengenai konsep kalor!</p>
+
+        <!-- Quiz 1 -->
+        <div class="quiz-item" data-q="1">
+            <p class="q-text">1. Apa arti dari lambang "Q" dalam rumus kalor Q = m × c × ΔT?</p>
+            <div class="option-group">
+                <button class="option-btn" data-ans="A">A. Suhu akhir benda</button>
+                <button class="option-btn" data-ans="B">B. Jumlah energi kalor (Joule)</button>
+                <button class="option-btn" data-ans="C">C. Kerapatan massa benda</button>
+                <button class="option-btn" data-ans="D">D. Kecepatan pemanasan</button>
+            </div>
+            <div class="q-feedback" style="margin-top: 8px; font-weight: 700;"></div>
+        </div>
+
+        <!-- Quiz 2 -->
+        <div class="quiz-item" data-q="2">
+            <p class="q-text">2. Satuan Standar Internasional (SI) untuk Kalor Jenis (c) adalah...</p>
+            <div class="option-group">
+                <button class="option-btn" data-ans="A">A. Joule (J)</button>
+                <button class="option-btn" data-ans="B">B. Kilogram (kg)</button>
+                <button class="option-btn" data-ans="C">C. J/kg°C</button>
+                <button class="option-btn" data-ans="D">D. Celcius (°C)</button>
+            </div>
+            <div class="q-feedback" style="margin-top: 8px; font-weight: 700;"></div>
+        </div>
+
+        <!-- Quiz 3 -->
+        <div class="quiz-item" data-q="3">
+            <p class="q-text">3. Jika suhu awal air adalah 20°C dan dipanaskan hingga 70°C, berapakah nilai ΔT?</p>
+            <div class="option-group">
+                <button class="option-btn" data-ans="A">A. 50 °C</button>
+                <button class="option-btn" data-ans="B">B. 90 °C</button>
+                <button class="option-btn" data-ans="C">C. 20 °C</button>
+                <button class="option-btn" data-ans="D">D. 70 °C</button>
+            </div>
+            <div class="q-feedback" style="margin-top: 8px; font-weight: 700;"></div>
+        </div>
+
+        <!-- Quiz 4 -->
+        <div class="quiz-item" data-q="4">
+            <p class="q-text">4. Besi memiliki kalor jenis 450 J/kg°C sedangkan Air 4.200 J/kg°C. Pernyataan yang benar adalah...</p>
+            <div class="option-group">
+                <button class="option-btn" data-ans="A">A. Besi lebih sulit panas dibanding air</button>
+                <button class="option-btn" data-ans="B">B. Air membutuhkan lebih sedikit kalor dibanding besi untuk naik suhu yang sama</button>
+                <button class="option-btn" data-ans="C">C. Air membutuhkan lebih banyak kalor dibanding besi untuk naik suhu yang sama</button>
+                <button class="option-btn" data-ans="D">D. Keduanya membutuhkan kalor yang persis sama</button>
+            </div>
+            <div class="q-feedback" style="margin-top: 8px; font-weight: 700;"></div>
+        </div>
+
+        <!-- Quiz 5 -->
+        <div class="quiz-item" data-q="5">
+            <p class="q-text">5. Sebuah benda bermassa 2 kg (c = 500 J/kg°C) dipanaskan dengan ΔT = 10°C. Kalor yang diserap adalah...</p>
+            <div class="option-group">
+                <button class="option-btn" data-ans="A">A. 1.000 J</button>
+                <button class="option-btn" data-ans="B">B. 5.000 J</button>
+                <button class="option-btn" data-ans="C">C. 10.000 J</button>
+                <button class="option-btn" data-ans="D">D. 2.500 J</button>
+            </div>
+            <div class="q-feedback" style="margin-top: 8px; font-weight: 700;"></div>
+        </div>
+
+        <button class="btn btn-primary" id="btnFinishQuiz" style="width: 100%; margin-top: 10px;">📊 Selesaikan Kuis & Lihat Skor</button>
+
+        <div class="score-box" id="quizScoreBox">
+            <div id="quizScoreText">Skor Kamu: 0 / 5</div>
+            <div id="quizBadgeMessage" style="font-size: 1rem; margin-top: 6px; font-weight: 500;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // State variables
+    let state = {
+        mass: 1.0,
+        c: 4200,
+        materialName: 'Air',
+        t1: 25,
+        t2: 75,
+        currentTemp: 25,
+        isHeating: false,
+        isPaused: false,
+        progress: 0, // 0 to 1
+        particles: []
+    };
+
+    let animFrameId = null;
+
+    // Quiz answers key
+    const quizAnswers = {
+        1: 'B',
+        2: 'C',
+        3: 'A',
+        4: 'C',
+        5: 'C'
+    };
+
+    let quizUserAnswers = {};
+
+    const materialSelect = document.getElementById('materialSelect');
+    const massRange = document.getElementById('massRange');
+    const massInput = document.getElementById('massInput');
+    const massValDisplay = document.getElementById('massValDisplay');
+    const t1Input = document.getElementById('t1Input');
+    const t2Input = document.getElementById('t2Input');
+
+    const btnStart = document.getElementById('btnStart');
+    const btnPause = document.getElementById('btnPause');
+    const btnReset = document.getElementById('btnReset');
+
+    const statusBadge = document.getElementById('statusBadge');
+    const currentTempDisplay = document.getElementById('currentTempDisplay');
+    const heaterStatusDisplay = document.getElementById('heaterStatusDisplay');
+
+    const labCanvas = document.getElementById('labCanvas');
+    const ctx = labCanvas.getContext('2d');
+
+    const graphCanvas = document.getElementById('graphCanvas');
+    const gctx = graphCanvas.getContext('2d');
+
+    function resizeCanvases() {
+        const rect1 = labCanvas.parentElement.getBoundingClientRect();
+        labCanvas.width = rect1.width;
+        labCanvas.height = rect1.height;
+
+        const rect2 = graphCanvas.parentElement.getBoundingClientRect();
+        graphCanvas.width = rect2.width;
+        graphCanvas.height = rect2.height;
+
+        drawLab();
+        drawGraph();
+    }
+
+    function formatNumber(num) {
+        return new Intl.NumberFormat('id-ID').format(num);
+    }
+
+    function calculateValues() {
+        // Validation guardrails
+        let m = parseFloat(massInput.value);
+        if (isNaN(m) || m <= 0) m = 0.1;
+        if (m > 5) m = 5;
+
+        let t1 = parseFloat(t1Input.value);
+        if (isNaN(t1)) t1 = 0;
+
+        let t2 = parseFloat(t2Input.value);
+        if (isNaN(t2)) t2 = t1 + 1;
+        if (t2 <= t1) t2 = t1 + 1; // ensure T2 > T1
+
+        const selectedOpt = materialSelect.options[materialSelect.selectedIndex];
+        let c = parseFloat(materialSelect.value);
+        let matName = selectedOpt.getAttribute('data-name');
+
+        state.mass = m;
+        state.c = c;
+        state.materialName = matName;
+        state.t1 = t1;
+        state.t2 = t2;
+
+        if (!state.isHeating && !state.isPaused) {
+            state.currentTemp = t1;
+        }
+
+        updateUI();
+    }
+
+    function updateUI() {
+        massValDisplay.textContent = state.mass.toFixed(1);
+        massRange.value = state.mass;
+        massInput.value = state.mass;
+
+        currentTempDisplay.textContent = state.currentTemp.toFixed(1);
+
+        // Update calculation panel text
+        document.getElementById('calcM').textContent = state.mass.toFixed(1);
+        document.getElementById('calcC').textContent = formatNumber(state.c);
+        document.getElementById('calcMatName').textContent = state.materialName;
+        document.getElementById('calcT1').textContent = state.t1;
+        document.getElementById('calcT2').textContent = state.t2;
+
+        const deltaT = Math.max(0, state.t2 - state.t1);
+        document.getElementById('calcT2Sub').textContent = state.t2;
+        document.getElementById('calcT1Sub').textContent = state.t1;
+        document.getElementById('calcDeltaT').textContent = deltaT;
+
+        document.getElementById('calcMSub').textContent = state.mass.toFixed(1);
+        document.getElementById('calcCSub').textContent = formatNumber(state.c);
+        document.getElementById('calcDeltaTSub').textContent = deltaT;
+
+        const q = state.mass * state.c * deltaT;
+        document.getElementById('calcQFinal').textContent = formatNumber(Math.round(q));
+
+        drawLab();
+        drawGraph();
+    }
+
+    function initParticles() {
+        state.particles = [];
+        for (let i = 0; i < 25; i++) {
+            state.particles.push({
+                x: (Math.random() - 0.5) * 80,
+                y: Math.random() * 80,
+                speed: 1 + Math.random() * 2,
+                size: 3 + Math.random() * 4
+            });
+        }
+    }
+
+    function drawLab() {
+        const w = labCanvas.width;
+        const h = labCanvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const centerX = w / 2;
+        const bottomY = h - 40;
+
+        // Draw Table Top
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(20, bottomY + 15, w - 40, 12);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(15, bottomY + 27, w - 30, 8);
+
+        // Draw Burner Base & Stand
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(centerX - 40, bottomY, 80, 15); // burner top
+        ctx.fillRect(centerX - 10, bottomY + 15, 20, 12); // stem
+
+        // Flame Animation
+        if (state.isHeating && !state.isPaused) {
+            ctx.save();
+            ctx.translate(centerX, bottomY);
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                const flameH = 20 + Math.random() * 15;
+                const flameW = 12 + Math.random() * 6;
+                ctx.fillStyle = i === 0 ? '#ef4444' : i === 1 ? '#f97316' : '#facc15';
+                ctx.moveTo(-flameW / (i + 1), 0);
+                ctx.quadraticCurveTo(0, -flameH, flameW / (i + 1), 0);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        // Beaker Dimensions
+        const beakerW = 120 + (state.mass * 10); // slightly scales with mass
+        const beakerH = 150;
+        const beakerX = centerX - beakerW / 2;
+        const beakerY = bottomY - 30 - beakerH;
+
+        // Draw Beaker liquid color transition based on current temp (Blue -> Orange/Red)
+        const tempRatio = Math.min(1, Math.max(0, (state.currentTemp - 15) / 85));
+        const r = Math.round(56 + tempRatio * (239 - 56));
+        const g = Math.round(189 - tempRatio * (100));
+        const b = Math.round(248 - tempRatio * (200));
+        const liquidColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
+
+        // Liquid height inside beaker
+        const liquidH = beakerH * 0.75;
+        const liquidY = beakerY + (beakerH - liquidH);
+
+        // Fill Liquid
+        ctx.fillStyle = liquidColor;
+        ctx.beginPath();
+        ctx.roundRect(beakerX + 4, liquidY, beakerW - 8, liquidH - 4, [0, 0, 10, 10]);
+        ctx.fill();
+
+        // Draw Floating Thermal Heat Particles
+        if (state.isHeating && !state.isPaused) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            state.particles.forEach(p => {
+                p.y -= p.speed;
+                if (p.y < 0) p.y = liquidH - 10;
+                ctx.beginPath();
+                ctx.arc(centerX + p.x % (beakerW / 2 - 10), liquidY + p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        // Glass Beaker Outline & Markings
+        ctx.strokeStyle = '#0284c7';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.roundRect(beakerX, beakerY, beakerW, beakerH, [0, 0, 12, 12]);
+        ctx.stroke();
+
+        // Measurement lines on beaker
+        ctx.strokeStyle = 'rgba(2, 132, 199, 0.5)';
+        ctx.lineWidth = 2;
+        for (let i = 1; i <= 4; i++) {
+            const lineY = beakerY + beakerH - (i * (beakerH / 5));
+            ctx.beginPath();
+            ctx.moveTo(beakerX + 6, lineY);
+            ctx.lineTo(beakerX + 24, lineY);
+            ctx.stroke();
+        }
+
+        // Draw Thermometer on the right side of beaker
+        const thermX = beakerX + beakerW - 25;
+        const thermY = beakerY - 30;
+        const thermH = beakerH + 20;
+
+        // Glass tube background
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(thermX, thermY, 12, thermH, 6);
+        ctx.fill();
+        ctx.stroke();
+
+        // Bulb at bottom
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(thermX + 6, thermY + thermH, 10, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Mercury Level inside thermometer
+        const mercuryMaxH = thermH - 15;
+        const mercuryH = Math.min(mercuryMaxH, Math.max(10, (state.currentTemp / 110) * mercuryMaxH));
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(thermX + 4, thermY + thermH - mercuryH, 4, mercuryH);
+    }
+
+    function drawGraph() {
+        const w = graphCanvas.width;
+        const h = graphCanvas.height;
+        gctx.clearRect(0, 0, w, h);
+
+        const padLeft = 60;
+        const padBottom = 40;
+        const padTop = 20;
+        const padRight = 30;
+
+        const graphW = w - padLeft - padRight;
+        const graphH = h - padTop - padBottom;
+
+        // Axes
+        gctx.strokeStyle = '#64748b';
+        gctx.lineWidth = 2;
+        gctx.beginPath();
+        gctx.moveTo(padLeft, padTop);
+        gctx.lineTo(padLeft, padTop + graphH);
+        gctx.lineTo(padLeft + graphW, padTop + graphH);
+        gctx.stroke();
+
+        // Labels
+        gctx.fillStyle = '#334155';
+        gctx.font = 'bold 12px sans-serif';
+        gctx.fillText('Massa (kg)', padLeft + graphW / 2 - 25, padTop + graphH + 32);
+        
+        gctx.save();
+        gctx.translate(18, padTop + graphH / 2 + 20);
+        gctx.rotate(-Math.PI / 2);
+        gctx.fillText('Kalor Q (Joule)', 0, 0);
+        gctx.restore();
+
+        // Curve plotting Q = m * c * ΔT (varying m from 0.1 to 5.0)
+        const deltaT = Math.max(0, state.t2 - state.t1);
+        const maxMass = 5.0;
+        const maxQ = maxMass * state.c * deltaT;
+
+        gctx.strokeStyle = '#0284c7';
+        gctx.lineWidth = 3;
+        gctx.beginPath();
+
+        for (let m = 0.1; m <= maxMass; m += 0.1) {
+            const qVal = m * state.c * deltaT;
+            const x = padLeft + (m / maxMass) * graphW;
+            const y = (padTop + graphH) - (qVal / (maxQ || 1)) * graphH;
+
+            if (m === 0.1) gctx.moveTo(x, y);
+            else gctx.lineTo(x, y);
+        }
+        gctx.stroke();
+
+        // Current point marker
+        const curM = state.mass;
+        const curQ = curM * state.c * deltaT;
+        const curX = padLeft + (curM / maxMass) * graphW;
+        const curY = (padTop + graphH) - (curQ / (maxQ || 1)) * graphH;
+
+        gctx.fillStyle = '#ef4444';
+        gctx.beginPath();
+        gctx.arc(curX, curY, 7, 0, Math.PI * 2);
+        gctx.fill();
+
+        // Point value popover label
+        gctx.fillStyle = '#1e293b';
+        gctx.font = '11px sans-serif';
+        gctx.fillText(`(${curM.toFixed(1)} kg, ${formatNumber(Math.round(curQ))} J)`, curX - 35, curY - 12);
+    }
+
+    function startExperiment() {
+        if (state.t2 <= state.t1) {
+            alert('Suhu akhir (T2) harus lebih besar dari suhu awal (T1)!');
+            return;
+        }
+
+        if (state.isPaused) {
+            state.isPaused = false;
+            state.isHeating = true;
+            statusBadge.textContent = 'Memanaskan...';
+            statusBadge.style.background = '#ffedd5';
+            statusBadge.style.color = '#9a3412';
+            heaterStatusDisplay.textContent = '🔥 Menyala';
+            heaterStatusDisplay.style.color = '#ef4444';
+            btnPause.textContent = '⏸️ Pause';
+            btnStart.disabled = true;
+            runHeatingLoop();
+            return;
+        }
+
+        state.isHeating = true;
+        state.isPaused = false;
+        state.currentTemp = state.t1;
+        initParticles();
+
+        statusBadge.textContent = 'Memanaskan...';
+        statusBadge.style.background = '#ffedd5';
+        statusBadge.style.color = '#9a3412';
+        heaterStatusDisplay.textContent = '🔥 Menyala';
+        heaterStatusDisplay.style.color = '#ef4444';
+
+        btnStart.disabled = true;
+        btnPause.disabled = false;
+
+        runHeatingLoop();
+    }
+
+    function runHeatingLoop() {
+        if (!state.isHeating || state.isPaused) return;
+
+        // Heating speed depends on mass and heat capacity
+        const totalDeltaT = state.t2 - state.t1;
+        const step = (totalDeltaT / (120 + state.mass * 30)); 
+
+        state.currentTemp += step;
+
+        if (state.currentTemp >= state.t2) {
+            state.currentTemp = state.t2;
+            state.isHeating = false;
+            statusBadge.textContent = '✅ Selesai';
+            statusBadge.style.background = '#dcfce7';
+            statusBadge.style.color = '#15803d';
+            heaterStatusDisplay.textContent = 'Mati (Target Tercapai)';
+            heaterStatusDisplay.style.color = '#64748b';
+
+            btnStart.disabled = false;
+            btnPause.disabled = true;
+        }
+
+        updateUI();
+
+        if (state.isHeating) {
+            animFrameId = requestAnimationFrame(runHeatingLoop);
+        }
+    }
+
+    function pauseExperiment() {
+        if (!state.isHeating) return;
+
+        if (state.isPaused) {
+            startExperiment();
+        } else {
+            state.isPaused = true;
+            statusBadge.textContent = '⏸️ Di-pause';
+            statusBadge.style.background = '#e2e8f0';
+            statusBadge.style.color = '#475569';
+            heaterStatusDisplay.textContent = 'Mati (Di-pause)';
+            heaterStatusDisplay.style.color = '#64748b';
+            btnPause.textContent = '▶️ Lanjut';
+        }
+    }
+
+    function resetExperiment() {
+        state.isHeating = false;
+        state.isPaused = false;
+        if (animFrameId) cancelAnimationFrame(animFrameId);
+
+        state.currentTemp = state.t1;
+        statusBadge.textContent = 'Siap';
+        statusBadge.style.background = '#ffedd5';
+        statusBadge.style.color = '#9a3412';
+        heaterStatusDisplay.textContent = 'Mati';
+        heaterStatusDisplay.style.color = '#64748b';
+
+        btnStart.disabled = false;
+        btnPause.disabled = true;
+        btnPause.textContent = '⏸️️ Pause';
+
+        updateUI();
+    }
+
+    materialSelect.addEventListener('change', calculateValues);
+    
+    massRange.addEventListener('input', (e) => {
+        massInput.value = e.target.value;
+        calculateValues();
+    });
+
+    massInput.addEventListener('change', (e) => {
+        massRange.value = e.target.value;
+        calculateValues();
+    });
+
+    t1Input.addEventListener('change', calculateValues);
+    t2Input.addEventListener('change', calculateValues);
+
+    btnStart.addEventListener('click', startExperiment);
+    btnPause.addEventListener('click', pauseExperiment);
+    btnReset.addEventListener('click', resetExperiment);
+
+    document.getElementById('btnMassSmall').addEventListener('click', () => {
+        massInput.value = 0.5;
+        massRange.value = 0.5;
+        calculateValues();
+        document.getElementById('challengeFeedback').innerHTML = 
+            `💡 <strong>Feedback:</strong> Massa diperkecil (0.5 kg) → Kalor (Q) berkurang menjadi <strong>${formatNumber(Math.round(0.5 * state.c * (state.t2 - state.t1)))} J</strong>. Semakin kecil massa, semakin sedikit kalor yang diperlukan!`;
+    });
+
+    document.getElementById('btnMassLarge').addEventListener('click', () => {
+        massInput.value = 3.0;
+        massRange.value = 3.0;
+        calculateValues();
+        document.getElementById('challengeFeedback').innerHTML = 
+            `💡 <strong>Feedback:</strong> Massa diperbesar (3.0 kg) → Kalor (Q) melonjak menjadi <strong>${formatNumber(Math.round(3.0 * state.c * (state.t2 - state.t1)))} J</strong>. Semakin besar massa, semakin besar kalor yang diperlukan!`;
+    });
+
+    document.getElementById('btnDtSmall').addEventListener('click', () => {
+        t1Input.value = 25;
+        t2Input.value = 35;
+        calculateValues();
+        document.getElementById('challengeFeedback').innerHTML = 
+            `💡 <strong>Feedback:</strong> ΔT diperkecil (10°C) → Kalor (Q) berkurang menjadi <strong>${formatNumber(Math.round(state.mass * state.c * 10))} J</strong>. Perubahan suhu yang kecil butuh energi lebih sedikit!`;
+    });
+
+    document.getElementById('btnDtLarge').addEventListener('click', () => {
+        t1Input.value = 25;
+        t2Input.value = 95;
+        calculateValues();
+        document.getElementById('challengeFeedback').innerHTML = 
+            `💡 <strong>Feedback:</strong> ΔT diperbesar (70°C) → Kalor (Q) bertambah menjadi <strong>${formatNumber(Math.round(state.mass * state.c * 70))} J</strong>. Semakin tinggi target kenaikan suhu, semakin besar kalor yang diperlukan!`;
+    });
+
+    const graphQuizBtns = document.querySelectorAll('#graphQuizGroup .option-btn');
+    graphQuizBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const isCorrect = btn.getAttribute('data-correct') === 'true';
+            graphQuizBtns.forEach(b => {
+                b.classList.remove('selected-correct', 'selected-wrong');
+            });
+
+            if (isCorrect) {
+                btn.classList.add('selected-correct');
+                document.getElementById('graphFeedback').innerHTML = '<span style="color: #15803d;">✅ Benar! Nilai Q berbanding lurus (sebading) dengan massa (m).</span>';
+            } else {
+                btn.classList.add('selected-wrong');
+                document.getElementById('graphFeedback').innerHTML = '<span style="color: #b91c1c;">❌ Belum tepat. Perhatikan bahwa garis grafik naik ke atas saat massa bertambah!</span>';
+            }
+        });
+    });
+
+    document.getElementById('btnCheckMission1').addEventListener('click', () => {
+        const userAns = parseFloat(document.getElementById('mission1Input').value);
+        // Correct answer: 1 kg * 4200 * (35-25) = 42,000 J
+        if (userAns === 42000) {
+            document.getElementById('mission1Feedback').innerHTML = '<span style="color: #15803d;">🎉 HEBAT! Jawabanmu tepat 42.000 Joule (1 kg × 4.200 × 10°C).</span>';
+        } else {
+            document.getElementById('mission1Feedback').innerHTML = '<span style="color: #b91c1c;">❌ Belum tepat. Petunjuk: Q = 1 × 4200 × (35 - 25). Coba lagi!</span>';
+        }
+    });
+
+    const mission2Btns = document.querySelectorAll('#mission2Group .option-btn');
+    mission2Btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const val = btn.getAttribute('data-m2');
+            mission2Btns.forEach(b => b.classList.remove('selected-correct', 'selected-wrong'));
+
+            if (val === 'B') {
+                btn.classList.add('selected-correct');
+                document.getElementById('mission2Feedback').innerHTML = 
+                    '<span style="color: #15803d;">✅ Tepat Sekali! Eksperimen B memiliki massa 2x lebih besar (2 kg), sehingga membutuhkan kalor 2x lebih besar (84.000 J vs 42.000 J).</span>';
+            } else {
+                btn.classList.add('selected-wrong');
+                document.getElementById('mission2Feedback').innerHTML = 
+                    '<span style="color: #b91c1c;">❌ Belum tepat. Ingat rumus Q = m × c × ΔT. Massa di Eksperimen B lebih besar!</span>';
+            }
+        });
+    });
+
+    const quizItems = document.querySelectorAll('.quiz-item');
+    quizItems.forEach(item => {
+        const qNum = item.getAttribute('data-q');
+        const btns = item.querySelectorAll('.option-btn');
+
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const selectedAns = btn.getAttribute('data-ans');
+                quizUserAnswers[qNum] = selectedAns;
+
+                btns.forEach(b => b.classList.remove('selected-correct', 'selected-wrong'));
+
+                const feedbackEl = item.querySelector('.q-feedback');
+                if (selectedAns === quizAnswers[qNum]) {
+                    btn.classList.add('selected-correct');
+                    feedbackEl.innerHTML = '<span style="color: #15803d;">✅ Benar!</span>';
+                } else {
+                    btn.classList.add('selected-wrong');
+                    feedbackEl.innerHTML = `<span style="color: #b91c1c;">❌ Belum tepat. (Jawaban benar: ${quizAnswers[qNum]})</span>`;
+                }
+            });
+        });
+    });
+
+    document.getElementById('btnFinishQuiz').addEventListener('click', () => {
+        let score = 0;
+        for (let q in quizAnswers) {
+            if (quizUserAnswers[q] === quizAnswers[q]) {
+                score++;
+            }
+        }
+
+        const scoreBox = document.getElementById('quizScoreBox');
+        scoreBox.style.display = 'block';
+        document.getElementById('quizScoreText').textContent = `Skor Kamu: ${score} / 5`;
+
+        let msg = '';
+        if (score === 5) {
+            msg = '🏆 Luar Biasa! Kamu adalah Ilmuwan Fisika Sejati!';
+        } else if (score >= 3) {
+            msg = '👍 Bagus Sekali! Kamu sudah memahami konsep dasar kalor dengan baik.';
+        } else {
+            msg = '💪 Jangan menyerah! Coba ulangi simulasi di atas dan pelajari lagi hubungan m, c, dan ΔT.';
+        }
+        document.getElementById('quizBadgeMessage').textContent = msg;
+    });
+
+    window.onload = function() {
+        resizeCanvases();
+        calculateValues();
+    };
+
+    window.onresize = function() {
+        resizeCanvases();
+    };
+</script>
+</body>
+</html>
